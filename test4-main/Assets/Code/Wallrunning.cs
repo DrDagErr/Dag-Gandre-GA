@@ -58,8 +58,7 @@ public class Wallrunning : MonoBehaviour
 
         if((wallLeft || wallRight) && verticalInput > 0 && AboveGround())
         {
-            //test3
-
+            //färdig?
         }
     }
 }
