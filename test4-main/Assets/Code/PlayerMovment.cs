@@ -13,6 +13,7 @@ public class PlayerMovment : MonoBehaviour
     public float jumpNbr;
     public float airMultipiler;
     public float groundDrag;
+    public float wallrunSpeed;
 
     [Header("Ground Check")]
     public float playerHeigt;
@@ -60,7 +61,10 @@ public class PlayerMovment : MonoBehaviour
         crouching,
         sliding,
         air,
+        wallrunning
     }
+
+    public bool wallrunning;
 
     private void Start()
     {
@@ -120,6 +124,11 @@ public class PlayerMovment : MonoBehaviour
 
     private void StateHandler()
     {
+        if (wallrunning)
+        {
+            state = MovmentSate.wallrunning;
+            moveSpeed = wallrunSpeed; 
+        }
         
         if (sliding)
         {

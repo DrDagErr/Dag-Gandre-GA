@@ -2,17 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Wallrunning : MonoBehaviour
+public class WallRunning : MonoBehaviour
 {
     [Header("Wallrunning")]
     public LayerMask whatIsWall;
     public LayerMask whatIsGround;
+    public float wallJumpUpForce;
+    public float wallJumpSideForce;
     public float wallRunForce;
+    public float wallClimbSpeed;
     public float maxWallRunTime;
     private float wallRunTimer;
 
     [Header("Input")]
-    private float horizantalInput;
+    public KeyCode jumpKey = KeyCode.Space;
+    public KeyCode upwardsRunKey = KeyCode.LeftShift;
+    public KeyCode downwardsRunKey = KeyCode.LeftControl;
+    private bool upwardsRunning;
+    private bool downwardsRunning;
+    private float horizontalInput;
     private float verticalInput;
 
     [Header("Detection")]
@@ -23,42 +31,122 @@ public class Wallrunning : MonoBehaviour
     private bool wallLeft;
     private bool wallRight;
 
-    [Header("Referencs")]
+    [Header("References")]
     public Transform orientation;
     private PlayerMovment pm;
     private Rigidbody rb;
 
-
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        pm = GetComponent<PlayerMovment>(); 
+        pm = GetComponent<PlayerMovment>();
     }
 
     private void Update()
     {
-        CheckForWall(); 
+        CheckForWall();
+        StateMachine();
+    }
+
+    private void FixedUpdate()
+    {
+        if (pm.wallrunning)
+            WallRunningMovement();
     }
 
     private void CheckForWall()
     {
         wallRight = Physics.Raycast(transform.position, orientation.right, out rightWallhit, wallCheckDistance, whatIsWall);
-        wallLeft  = Physics.Raycast(transform.position, orientation.right, out leftWallhit, wallCheckDistance, whatIsWall);
+        wallLeft = Physics.Raycast(transform.position, -orientation.right, out leftWallhit, wallCheckDistance, whatIsWall);
     }
 
     private bool AboveGround()
     {
-        return !Physics.Raycast(transform.position, Vector3.down, minJumpHeight, whatIsGround); 
+        return !Physics.Raycast(transform.position, Vector3.down, minJumpHeight, whatIsGround);
     }
 
     private void StateMachine()
     {
-        horizantalInput = Input.GetAxisRaw("Horizantal");
-        verticalInput = Input.GetAxisRaw("Vertical"); 
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
 
-        if((wallLeft || wallRight) && verticalInput > 0 && AboveGround())
+        upwardsRunning = Input.GetKey(upwardsRunKey);
+        downwardsRunning = Input.GetKey(downwardsRunKey);
+
+        if ((wallLeft || wallRight) && verticalInput > 0 && AboveGround())
         {
-            //färdig?
+            if (!pm.wallrunning)
+            {
+                StartWallRun();
+            }
+            if (Input.GetKeyDown(jumpKey))
+            {
+                WallJump();
+            }
         }
+
+        else
+        {
+            if (pm.wallrunning)
+            {
+                StopWallRun();
+            }
+                
+        }
+    }
+
+    private void StartWallRun()
+    {
+        pm.wallrunning = true;
+    }
+
+    private void WallRunningMovement()
+    {
+        rb.useGravity = false;
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+        Vector3 wallNormal = wallRight ? rightWallhit.normal : leftWallhit.normal;
+
+        Vector3 wallForward = Vector3.Cross(wallNormal, transform.up);
+
+        if ((orientation.forward - wallForward).magnitude > (orientation.forward - -wallForward).magnitude)
+        {
+            wallForward = -wallForward;
+        }
+            
+
+        rb.AddForce(wallForward * wallRunForce, ForceMode.Force);
+
+        if (upwardsRunning)
+        {
+            rb.velocity = new Vector3(rb.velocity.x, wallClimbSpeed, rb.velocity.z);
+        }
+            
+        if (downwardsRunning)
+        {
+            rb.velocity = new Vector3(rb.velocity.x, -wallClimbSpeed, rb.velocity.z);
+        }
+          
+
+        if (!(wallLeft && horizontalInput > 0) && !(wallRight && horizontalInput < 0))
+        {
+            rb.AddForce(-wallNormal * 100, ForceMode.Force);
+        }
+            
+    }
+
+    private void StopWallRun()
+    {
+        pm.wallrunning = false;
+    }
+
+    private void WallJump()
+    {
+        Vector3 wallNormal = wallRight ? rightWallhit.normal : leftWallhit.normal;
+
+        Vector3 jumpForce = transform.up * wallJumpUpForce + wallNormal * wallJumpSideForce;
+
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        rb.AddForce(jumpForce, ForceMode.Impulse);
     }
 }
