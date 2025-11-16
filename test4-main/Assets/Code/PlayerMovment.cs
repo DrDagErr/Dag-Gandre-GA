@@ -10,7 +10,7 @@ public class PlayerMovment : MonoBehaviour
     public float sprintSpeed;
     public float jumpForce;
     public float jumpCooldown;
-    public float jumpNbr;
+    //public float jumpNbr;
     public float airMultipiler;
     public float groundDrag;
     public float wallrunSpeed;
@@ -95,7 +95,7 @@ public class PlayerMovment : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKey(jumpkey) && jumpReady && jumpNbr < 1)
+        if (Input.GetKey(jumpkey) && jumpReady && grounded) //jumpNbr < 1)
         {
             jumpReady = false;
             Jump();
@@ -144,19 +144,19 @@ public class PlayerMovment : MonoBehaviour
         {
             state = MovmentSate.crouching;
             moveSpeed = crouchSpeed;
-            jumpNbr = 0f;
+            //jumpNbr = 0f;
         }
         else if (grounded && Input.GetKey(springKey) && !Input.GetKey(crouchKey))
         {
             state = MovmentSate.sprinting;
             moveSpeed = sprintSpeed;
-            jumpNbr = 0f;
+            //jumpNbr = 0f;
         }
         else if (grounded)
         {
             state = MovmentSate.walking;
             moveSpeed = walkSpeed;
-            jumpNbr = 0f; 
+            //jumpNbr = 0f; 
         }
         else
         {
@@ -205,7 +205,10 @@ public class PlayerMovment : MonoBehaviour
 
             rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
             if (rb.velocity.y > 0)
+            {
                 rb.AddForce(Vector3.down * 180f, ForceMode.Force);
+            }
+                
         }
         else if (grounded)
         {
@@ -216,7 +219,10 @@ public class PlayerMovment : MonoBehaviour
             rb.AddForce(moveDiraction.normalized * moveSpeed * 10f * airMultipiler, ForceMode.Force);
         }
 
-        rb.useGravity = !OnSlope();
+        if (!wallrunning)
+        {
+            rb.useGravity = !OnSlope();
+        }
     }
 
     private void SpeedControl()
@@ -243,7 +249,7 @@ public class PlayerMovment : MonoBehaviour
         exitSlpoe = true;
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-        jumpNbr++;
+        //jumpNbr++;
     }
 
     private void ResetJump()

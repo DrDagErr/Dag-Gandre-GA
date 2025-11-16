@@ -13,6 +13,12 @@ public class PlayerCam : MonoBehaviour
     float xRot;
     float yRot;
 
+    [Header("Wallrun tilt")]
+    public float tiltDegress = 15f;
+    public float tiltSpeed = 5f;
+    private float currentTilt;
+    private float targetTilt; 
+
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -31,8 +37,15 @@ public class PlayerCam : MonoBehaviour
 
         xRot = Mathf.Clamp(xRot, -90, 90);
 
+        currentTilt = Mathf.Lerp(currentTilt, targetTilt, Time.deltaTime * tiltSpeed);
+
         //rotate cam
-        transform.rotation = Quaternion.Euler(xRot, yRot, 0);
+        transform.localRotation = Quaternion.Euler(xRot, yRot, currentTilt); 
         looking.rotation = Quaternion.Euler(0, yRot, 0); 
+    }
+
+    public void SetWallrunTilt(int direction)
+    {
+        targetTilt = tiltDegress * direction;
     }
 }
