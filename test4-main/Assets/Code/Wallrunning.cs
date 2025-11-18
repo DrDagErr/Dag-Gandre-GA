@@ -214,6 +214,9 @@ public class WallRunning : MonoBehaviour
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         rb.AddForce(jumpForce, ForceMode.Impulse);
 
+        pm.dubbleJump = true;
+        pm.canDoubleAfterRelease = false;
+
         cam.SetWallrunTilt(0);
     }
 }
