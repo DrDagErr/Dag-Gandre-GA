@@ -397,6 +397,7 @@ MonoBehaviour:
   whatIsGround:
     serializedVersion: 2
     m_Bits: 1024
+  grounded: 0
   looking: {fileID: 960229437}
   jumpkey: 32
   springKey: 304
@@ -444,6 +445,7 @@ MonoBehaviour:
   useGravity: 1
   upForce: 20
   orientation: {fileID: 960229437}
+  sameWallCooldown: 500
 --- !u!1 &512217838
 GameObject:
   m_ObjectHideFlags: 0

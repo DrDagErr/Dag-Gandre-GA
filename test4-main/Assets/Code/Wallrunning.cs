@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using TMPro.EditorUtilities;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
@@ -48,6 +49,11 @@ public class WallRunning : MonoBehaviour
     public Transform orientation;
     private PlayerMovment pm;
     private Rigidbody rb;
+    private Vector3 lastWallNormal;
+    private bool blockedSameWall;
+    public float sameWallCooldown = 0.3f;
+    private float sameWallCooldownTimer;
+
 
     private void Start()
     {
@@ -60,6 +66,11 @@ public class WallRunning : MonoBehaviour
     {
         CheckForWall();
         StateMachine();
+
+        if (pm.grounded)
+        {
+            blockedSameWall = false;
+        }
     }
 
     private void FixedUpdate()
@@ -87,7 +98,7 @@ public class WallRunning : MonoBehaviour
         upwardsRunning = Input.GetKey(upwardsRunKey);
         downwardsRunning = Input.GetKey(downwardsRunKey);
 
-        if ((wallLeft || wallRight) && verticalInput > 0 && AboveGround() && !exitingWall)
+        if ((wallLeft || wallRight) && verticalInput > 0 && AboveGround() && !exitingWall && !IsSameWallBlock())
         {
             if (!pm.wallrunning)
             {
@@ -200,6 +211,18 @@ public class WallRunning : MonoBehaviour
     {
         pm.wallrunning = false;
 
+        if (wallLeft)
+        {
+            lastWallNormal = leftWallhit.normal;
+        }
+        else if (wallRight)
+        {
+            lastWallNormal = rightWallhit.normal;
+        }
+
+        blockedSameWall = true;
+        sameWallCooldownTimer = sameWallCooldown;
+
         cam.SetWallrunTilt(0);
     }
 
@@ -220,5 +243,24 @@ public class WallRunning : MonoBehaviour
         wallRunTimer = 0f;
 
         cam.SetWallrunTilt(0);
+    }
+
+    private bool IsSameWallBlock()
+    {
+        if (!blockedSameWall)
+        {
+            return false;
+        }
+
+        sameWallCooldownTimer -= Time.deltaTime;
+
+        if (sameWallCooldownTimer <= 0f)
+        {
+            blockedSameWall = false;
+        }
+
+        Vector3 currentNormal = wallRight ? rightWallhit.normal : leftWallhit.normal;
+
+        return Vector3.Angle(currentNormal, lastWallNormal) < 5f;
     }
 }

@@ -21,7 +21,7 @@ public class PlayerMovment : MonoBehaviour
     [Header("Ground Check")]
     public float playerHeigt;
     public LayerMask whatIsGround;
-    bool grounded;
+    public bool grounded;
 
     public Transform looking;
 
