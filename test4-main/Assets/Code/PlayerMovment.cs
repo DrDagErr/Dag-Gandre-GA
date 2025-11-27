@@ -41,12 +41,12 @@ public class PlayerMovment : MonoBehaviour
     public float startYscale;
 
     [Header("Sliding")]
-    public float slideStopSpeed = 6f;         
-    public float slideStartSpeed = 20f;     
+    public float slideStopSpeed = 6f;
+    public float slideStartSpeed = 20f;
     public float slideForce = 10f;
-    public float slideDrag = 0.5f; 
-    public float slideYscale;                
-    private bool sliding = false;             
+    public float slideDrag = 0.5f;
+    public float slideYscale;
+    private bool sliding = false;
 
     [Header("Slope Movement")]
     public float maxSlopeAngle;
@@ -81,7 +81,14 @@ public class PlayerMovment : MonoBehaviour
     {
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeigt * 0.5f + 0.3f, whatIsGround);
 
-        rb.drag = grounded ? groundDrag : 0;
+        if (grounded)
+        {
+            rb.drag = groundDrag;
+        }
+        else
+        {
+            rb.drag = 0f;
+        }
 
         MyInput();
         SpeedControl();
@@ -112,14 +119,12 @@ public class PlayerMovment : MonoBehaviour
 
         if (Input.GetKeyDown(jumpkey) && dubbleJump && canDoubleAfterRelease && state == MovmentSate.air && !wallrunning)
         {
-            
             rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
             rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
 
-            dubbleJump = false; 
+            dubbleJump = false;
         }
 
-       
         if (Input.GetKeyDown(crouchKey))
         {
             if (moveSpeed >= slideStartSpeed && grounded)
@@ -132,7 +137,6 @@ public class PlayerMovment : MonoBehaviour
             }
         }
 
-        
         if (Input.GetKeyUp(crouchKey))
         {
             StopSlideOrCrouch();
@@ -144,9 +148,9 @@ public class PlayerMovment : MonoBehaviour
         if (wallrunning)
         {
             state = MovmentSate.wallrunning;
-            moveSpeed = wallrunSpeed; 
+            moveSpeed = wallrunSpeed;
         }
-        
+
         if (sliding)
         {
             state = MovmentSate.sliding;
@@ -182,7 +186,6 @@ public class PlayerMovment : MonoBehaviour
     {
         moveDiraction = looking.forward * verticalInput + looking.right * horizontalInput;
 
-       
         if (sliding)
         {
             Vector3 slideDir;
@@ -193,18 +196,15 @@ public class PlayerMovment : MonoBehaviour
                 rb.useGravity = false;
 
                 float slopeAngle = Vector3.Angle(Vector3.up, slopeHit.normal);
-
                 float slopeBoost = Mathf.Lerp(1f, 2.5f, slopeAngle / maxSlopeAngle);
-                
+
                 Vector3 controlDir = (slideDir + moveDiraction.normalized * 0.25f).normalized;
-     
+
                 rb.AddForce(controlDir * slideForce * slopeBoost, ForceMode.Force);
-              
                 rb.AddForce(-slopeHit.normal * 60f, ForceMode.Force);
             }
             else
             {
-                
                 rb.useGravity = true;
                 Vector3 controlDir = (rb.velocity.normalized + moveDiraction.normalized * 0.3f).normalized;
                 rb.AddForce(controlDir * slideForce, ForceMode.Force);
@@ -213,16 +213,13 @@ public class PlayerMovment : MonoBehaviour
             return;
         }
 
-      
         if (OnSlope() && !exitSlpoe)
         {
-
             rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
             if (rb.velocity.y > 0)
             {
                 rb.AddForce(Vector3.down * 180f, ForceMode.Force);
             }
-                
         }
         else if (grounded)
         {
@@ -266,12 +263,11 @@ public class PlayerMovment : MonoBehaviour
 
         if (!wallrunning)
         {
-            dubbleJump = true; 
+            dubbleJump = true;
         }
-
         else
         {
-            dubbleJump = false; 
+            dubbleJump = false;
         }
     }
 
@@ -296,7 +292,6 @@ public class PlayerMovment : MonoBehaviour
         return Vector3.ProjectOnPlane(moveDiraction, slopeHit.normal).normalized;
     }
 
-    
     private void StartSlide()
     {
         sliding = true;
@@ -304,12 +299,13 @@ public class PlayerMovment : MonoBehaviour
         transform.localScale = new Vector3(transform.localScale.x, slideYscale, transform.localScale.z);
 
         rb.AddForce(looking.forward * slideForce, ForceMode.Impulse);
-        rb.drag = slideDrag; 
+        rb.drag = slideDrag;
     }
 
     private void StopSlideOrCrouch()
     {
         sliding = false;
+
         if (Input.GetKey(crouchKey))
         {
             transform.localScale = new Vector3(transform.localScale.x, crouchYscale, transform.localScale.z);
@@ -318,8 +314,9 @@ public class PlayerMovment : MonoBehaviour
         {
             transform.localScale = new Vector3(transform.localScale.x, startYscale, transform.localScale.z);
         }
+
         rb.useGravity = true;
-        rb.drag = groundDrag; 
+        rb.drag = groundDrag;
     }
 
     private void StartCrouch()

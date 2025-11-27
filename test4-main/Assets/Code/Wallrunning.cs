@@ -217,6 +217,8 @@ public class WallRunning : MonoBehaviour
         pm.dubbleJump = true;
         pm.canDoubleAfterRelease = false;
 
+        wallRunTimer = 0f;
+
         cam.SetWallrunTilt(0);
     }
 }
