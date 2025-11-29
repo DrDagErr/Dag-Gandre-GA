@@ -17,6 +17,7 @@ public class PlayerMovment : MonoBehaviour
     public float airMultipiler;
     public float groundDrag;
     public float wallrunSpeed;
+    public float grappleSpeed;
 
     [Header("Ground Check")]
     public float playerHeigt;
@@ -64,10 +65,13 @@ public class PlayerMovment : MonoBehaviour
         crouching,
         sliding,
         air,
-        wallrunning
+        wallrunning,
+        grapplning,
     }
 
     public bool wallrunning;
+
+    public bool grapplning;
 
     private void Start()
     {
@@ -151,7 +155,7 @@ public class PlayerMovment : MonoBehaviour
             moveSpeed = wallrunSpeed;
         }
 
-        if (sliding)
+        else if (sliding)
         {
             state = MovmentSate.sliding;
             if (rb.velocity.magnitude <= slideStopSpeed || !Input.GetKey(crouchKey))
@@ -161,7 +165,13 @@ public class PlayerMovment : MonoBehaviour
             return;
         }
 
-        if (grounded && Input.GetKey(crouchKey))
+        else if (grapplning)
+        {
+            state = MovmentSate.grapplning;
+            grappleSpeed = 50f;
+        }
+
+        else if (grounded && Input.GetKey(crouchKey))
         {
             state = MovmentSate.crouching;
             moveSpeed = crouchSpeed;
@@ -184,6 +194,10 @@ public class PlayerMovment : MonoBehaviour
 
     private void MovePlayer()
     {
+        if (grapplning)
+        {
+            return;
+        }
         moveDiraction = looking.forward * verticalInput + looking.right * horizontalInput;
 
         if (sliding)
