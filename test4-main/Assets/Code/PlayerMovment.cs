@@ -108,11 +108,17 @@ public class PlayerMovment : MonoBehaviour
         if (sliding)
         {
             slideTimer -= Time.deltaTime;
-            if(slideTimer <= 0)
+            if (slideTimer <= 0)
             {
                 StopSlideOrCrouch();
             }
         }
+
+        if (Input.GetKeyDown(respawnKey))
+        {
+            RespawnPlayer();
+        }
+
     }
 
     private void FixedUpdate()
@@ -263,9 +269,9 @@ public class PlayerMovment : MonoBehaviour
         {
             if (rb.velocity.magnitude > moveSpeed)
             {
-                rb.velocity = rb.velocity.normalized * moveSpeed; 
+                rb.velocity = rb.velocity.normalized * moveSpeed;
             }
-                
+
         }
         else
         {
@@ -324,9 +330,6 @@ public class PlayerMovment : MonoBehaviour
 
         transform.localScale = new Vector3(transform.localScale.x, slideYscale, transform.localScale.z);
 
-        // Only add forward impulse when:
-        // - NOT on a slope
-        // - NOT grappling
         if (!OnSlope() && !grapplning)
         {
             rb.AddForce(looking.forward * slideForce, ForceMode.Impulse);
@@ -357,4 +360,20 @@ public class PlayerMovment : MonoBehaviour
     {
         transform.localScale = new Vector3(transform.localScale.x, crouchYscale, transform.localScale.z);
     }
+
+    [Header("Respawn")]
+    public Transform respawnPoint;
+    public KeyCode respawnKey = KeyCode.R;
+
+    private void RespawnPlayer()
+    {
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        transform.position = respawnPoint.position;
+
+        transform.localScale = new Vector3(transform.localScale.x, startYscale, transform.localScale.z);
+    }
 }
+
+

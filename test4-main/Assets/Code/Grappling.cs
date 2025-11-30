@@ -111,6 +111,7 @@ public class Grappling : MonoBehaviour
 
     private void StartGrapple()
     {
+        predictPoint.gameObject.SetActive(false);
         if (predictHit.point == Vector3.zero)
         {
             return;
@@ -141,6 +142,7 @@ public class Grappling : MonoBehaviour
     {
         pm.grapplning = false;
         lr.positionCount = 0;
+        predictPoint.gameObject.SetActive(true);
 
         if (joint != null)
         {
