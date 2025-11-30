@@ -42,11 +42,13 @@ public class PlayerMovment : MonoBehaviour
     public float startYscale;
 
     [Header("Sliding")]
-    public float slideStopSpeed = 6f;
-    public float slideStartSpeed = 20f;
-    public float slideForce = 10f;
-    public float slideDrag = 0.5f;
+    public float slideStopSpeed;
+    public float slideStartSpeed;
+    public float slideForce;
+    public float slideDrag;
     public float slideYscale;
+    public float maxSlideTime;
+    private float slideTimer;
     private bool sliding = false;
 
     [Header("Slope Movement")]
@@ -101,6 +103,15 @@ public class PlayerMovment : MonoBehaviour
         if (Input.GetKeyUp(jumpkey))
         {
             canDoubleAfterRelease = true;
+        }
+
+        if (sliding)
+        {
+            slideTimer -= Time.deltaTime;
+            if(slideTimer <= 0)
+            {
+                StopSlideOrCrouch();
+            }
         }
     }
 
@@ -230,10 +241,6 @@ public class PlayerMovment : MonoBehaviour
         if (OnSlope() && !exitSlpoe)
         {
             rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
-            if (rb.velocity.y > 0)
-            {
-                rb.AddForce(Vector3.down * 180f, ForceMode.Force);
-            }
         }
         else if (grounded)
         {
@@ -255,7 +262,10 @@ public class PlayerMovment : MonoBehaviour
         if (OnSlope() && !exitSlpoe)
         {
             if (rb.velocity.magnitude > moveSpeed)
-                rb.velocity = rb.velocity.normalized * moveSpeed;
+            {
+                rb.velocity = rb.velocity.normalized * moveSpeed; 
+            }
+                
         }
         else
         {
@@ -309,12 +319,22 @@ public class PlayerMovment : MonoBehaviour
     private void StartSlide()
     {
         sliding = true;
+        slideTimer = maxSlideTime;
         state = MovmentSate.sliding;
+
         transform.localScale = new Vector3(transform.localScale.x, slideYscale, transform.localScale.z);
 
-        rb.AddForce(looking.forward * slideForce, ForceMode.Impulse);
+        // Only add forward impulse when:
+        // - NOT on a slope
+        // - NOT grappling
+        if (!OnSlope() && !grapplning)
+        {
+            rb.AddForce(looking.forward * slideForce, ForceMode.Impulse);
+        }
+
         rb.drag = slideDrag;
     }
+
 
     private void StopSlideOrCrouch()
     {
