@@ -492,7 +492,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 0
   walkSpeed: 12
-  sprintSpeed: 22
+  sprintSpeed: 18
   jumpForce: 15
   jumpCooldown: 1
   dubbleJump: 0
@@ -514,7 +514,7 @@ MonoBehaviour:
   crouchYscale: 0.7
   startYscale: 1
   slideStopSpeed: 6
-  slideStartSpeed: 20
+  slideStartSpeed: 16
   slideForce: 60
   slideDrag: 1.25
   slideYscale: 0.25
@@ -681,10 +681,11 @@ MonoBehaviour:
   pm: {fileID: 403745289}
   looking: {fileID: 960229437}
   rb: {fileID: 403745287}
-  maxGrappleDistance: 40
+  maxGrappleDistance: 15
   horizontalForce: 5000
-  forwardForce: 12000
-  extendCableSpeed: 20
+  forwardForce: 100
+  autoForwardForce: 5000
+  extendCableSpeed: 50
   predictBallRadius: 3
   predictPoint: {fileID: 883307503}
   grappleKey: 323

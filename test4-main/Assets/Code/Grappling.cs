@@ -11,14 +11,15 @@ public class Grappling : MonoBehaviour
     public Rigidbody rb;
 
     [Header("Grapple Settings")]
-    public float maxGrappleDistance = 40f;
+    public float maxGrappleDistance = 25f;
     private Vector3 grapplePoint;
     private SpringJoint joint;
 
     [Header("Swinging Forces")]
-    public float horizontalForce = 3000f;
-    public float forwardForce = 7000f;
-    public float extendCableSpeed = 5f;
+    public float horizontalForce;
+    public float forwardForce;
+    public float autoForwardForce;
+    public float extendCableSpeed;
 
     [Header("Prediction")]
     public float predictBallRadius = 4f;
@@ -35,16 +36,22 @@ public class Grappling : MonoBehaviour
         CheckForGrapplePoints();
 
         if (Input.GetKeyDown(grappleKey))
+        {
             StartGrapple();
+        }
 
         if (Input.GetKeyUp(grappleKey))
+        {
             StopGrapple();
+        }
     }
 
     private void FixedUpdate()
     {
         if (joint != null)
+        {
             GearMovement();
+        }
     }
 
     private void LateUpdate()
@@ -55,7 +62,9 @@ public class Grappling : MonoBehaviour
     private void CheckForGrapplePoints()
     {
         if (joint != null)
+        {
             return;
+        }
 
         RaycastHit sphereHit;
         Physics.SphereCast(
@@ -64,7 +73,8 @@ public class Grappling : MonoBehaviour
             cam.forward,
             out sphereHit,
             maxGrappleDistance,
-            canGrapple);
+            canGrapple
+        );
 
         RaycastHit rayHit;
         Physics.Raycast(
@@ -72,14 +82,19 @@ public class Grappling : MonoBehaviour
             cam.forward,
             out rayHit,
             maxGrappleDistance,
-            canGrapple);
+            canGrapple
+        );
 
         Vector3 bestPoint = Vector3.zero;
 
         if (rayHit.point != Vector3.zero)
+        {
             bestPoint = rayHit.point;
+        }
         else if (sphereHit.point != Vector3.zero)
+        {
             bestPoint = sphereHit.point;
+        }
 
         if (bestPoint != Vector3.zero)
         {
@@ -97,7 +112,9 @@ public class Grappling : MonoBehaviour
     private void StartGrapple()
     {
         if (predictHit.point == Vector3.zero)
+        {
             return;
+        }
 
         pm.grapplning = true;
 
@@ -126,34 +143,41 @@ public class Grappling : MonoBehaviour
         lr.positionCount = 0;
 
         if (joint != null)
+        {
             Destroy(joint);
+        }
     }
 
     private void GearMovement()
     {
-        // Side movement
+        Vector3 autoDir = (grapplePoint - transform.position).normalized;
+        rb.AddForce(autoDir * autoForwardForce * Time.deltaTime);
+
         if (Input.GetKey(KeyCode.D))
-            rb.AddForce(looking.right * horizontalForce * Time.fixedDeltaTime);
+        {
+            rb.AddForce(looking.right * horizontalForce * Time.deltaTime);
+        }
 
         if (Input.GetKey(KeyCode.A))
-            rb.AddForce(-looking.right * horizontalForce * Time.fixedDeltaTime);
+        {
+            rb.AddForce(-looking.right * horizontalForce * Time.deltaTime);
+        }
 
-        // Forward swing
         if (Input.GetKey(KeyCode.W))
-            rb.AddForce(looking.forward * horizontalForce * Time.fixedDeltaTime);
+        {
+            rb.AddForce(looking.forward * horizontalForce * Time.deltaTime);
+        }
 
-        // Pull toward point
         if (Input.GetKey(KeyCode.Space))
         {
             Vector3 dir = (grapplePoint - transform.position).normalized;
-            rb.AddForce(dir * forwardForce * Time.fixedDeltaTime);
+            rb.AddForce(dir * forwardForce * Time.deltaTime);
 
             float dist = Vector3.Distance(transform.position, grapplePoint);
             joint.maxDistance = dist * 0.8f;
             joint.minDistance = dist * 0.25f;
         }
 
-        // Extend rope
         if (Input.GetKey(KeyCode.S))
         {
             float dist = Vector3.Distance(transform.position, grapplePoint) + extendCableSpeed;
@@ -165,12 +189,15 @@ public class Grappling : MonoBehaviour
     private void DrawRope()
     {
         if (joint == null)
+        {
             return;
+        }
 
         currentGrapplePosition = Vector3.Lerp(
             currentGrapplePosition,
             grapplePoint,
-            Time.deltaTime * 8f);
+            Time.deltaTime * 8f
+        );
 
         lr.SetPosition(0, gunTip.position);
         lr.SetPosition(1, currentGrapplePosition);
