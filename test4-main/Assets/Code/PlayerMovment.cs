@@ -131,7 +131,7 @@ public class PlayerMovment : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKey(jumpkey) && jumpReady && grounded)
+        if (Input.GetKey(jumpkey) && jumpReady && grounded && !sliding)
         {
             jumpReady = false;
             Jump();
