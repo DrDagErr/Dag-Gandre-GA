@@ -2116,6 +2116,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d978250be6600e418627f7eaa1b0cdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: 0
   moveSpeed: 0
   walkSpeed: 12
   sprintSpeed: 18
@@ -2144,9 +2145,8 @@ MonoBehaviour:
   slideForce: 100
   slideDrag: 1.25
   slideYscale: 0.25
-  maxSlideTime: 3
+  maxSlideTime: 1.5
   maxSlopeAngle: 40
-  state: 0
   wallrunning: 0
   grapplning: 0
   respawnPoint: {fileID: 2065101162}

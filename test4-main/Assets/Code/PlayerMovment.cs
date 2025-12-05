@@ -7,6 +7,7 @@ public class PlayerMovment : MonoBehaviour
     Rigidbody rb;
 
     [Header("Movement")]
+    public MovmentSate state;
     public float moveSpeed;
     public float walkSpeed;
     public float sprintSpeed;
@@ -58,7 +59,6 @@ public class PlayerMovment : MonoBehaviour
 
     Vector3 moveDiraction;
 
-    public MovmentSate state;
 
     public enum MovmentSate
     {
