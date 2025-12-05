@@ -11,6 +11,7 @@ public class PlayerMovment : MonoBehaviour
     public float moveSpeed;
     public float walkSpeed;
     public float sprintSpeed;
+    public bool isRunning = false;
     public float jumpForce;
     public float jumpCooldown;
     public bool dubbleJump;
@@ -170,10 +171,12 @@ public class PlayerMovment : MonoBehaviour
         {
             state = MovmentSate.wallrunning;
             moveSpeed = wallrunSpeed;
+            isRunning = false;
         }
 
         else if (sliding)
         {
+            isRunning = false;
             state = MovmentSate.sliding;
             if (rb.velocity.magnitude <= slideStopSpeed || !Input.GetKey(crouchKey))
             {
@@ -186,15 +189,18 @@ public class PlayerMovment : MonoBehaviour
         {
             state = MovmentSate.grapplning;
             grappleSpeed = 50f;
+            isRunning = false;
         }
 
         else if (grounded && Input.GetKey(crouchKey))
         {
             state = MovmentSate.crouching;
             moveSpeed = crouchSpeed;
+            isRunning = false;
         }
         else if (grounded && Input.GetKey(springKey) && !Input.GetKey(crouchKey))
         {
+            isRunning = true;
             state = MovmentSate.sprinting;
             moveSpeed = sprintSpeed;
         }
@@ -202,10 +208,12 @@ public class PlayerMovment : MonoBehaviour
         {
             state = MovmentSate.walking;
             moveSpeed = walkSpeed;
+            isRunning = false;
         }
         else
         {
             state = MovmentSate.air;
+            isRunning = false;
         }
     }
 
