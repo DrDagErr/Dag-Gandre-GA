@@ -7,6 +7,9 @@ public class PlayerCam : MonoBehaviour
 {
     PlayerMovment pm;
 
+    public Transform Ggun;
+    Vector3 gunStartPos; 
+
     [Header("Sens")]
     public float sensX;
     public float sensY;
@@ -33,6 +36,9 @@ public class PlayerCam : MonoBehaviour
 
     private void Start()
     {
+        gunStartPos = Ggun.localPosition;
+
+
         pm = GetComponentInParent<PlayerMovment>();
 
         Cursor.lockState = CursorLockMode.Locked;
