@@ -198,7 +198,7 @@ public class PlayerMovment : MonoBehaviour
             moveSpeed = crouchSpeed;
             isRunning = false;
         }
-        else if (grounded && Input.GetKey(springKey) && !Input.GetKey(crouchKey))
+        else if (grounded && Input.GetKey(springKey) && Input.GetKey(KeyCode.W) && !Input.GetKey(crouchKey))
         {
             isRunning = true;
             state = MovmentSate.sprinting;

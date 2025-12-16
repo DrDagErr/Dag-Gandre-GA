@@ -7,8 +7,8 @@ public class PlayerCam : MonoBehaviour
 {
     PlayerMovment pm;
 
-    public Transform Ggun;
-    Vector3 gunStartPos; 
+    //public Transform Ggun;
+    //Vector3 gunStartPos; 
 
     [Header("Sens")]
     public float sensX;
@@ -36,7 +36,7 @@ public class PlayerCam : MonoBehaviour
 
     private void Start()
     {
-        gunStartPos = Ggun.localPosition;
+        //gunStartPos = Ggun.localPosition;
 
 
         pm = GetComponentInParent<PlayerMovment>();
